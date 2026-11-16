@@ -111,14 +111,55 @@ Astrial Panel splits workload management into three decoupled layers:
 - Go 1.22+
 - PHP 8.0+ & Nginx
 
+## Production Deployment & Public Setup
+
+Astrial Panel is designed for real hosting infrastructure deployments across public domains, reverse proxies, and remote database clusters.
+
+### Method A: One-Command Automated Host Installer (Ubuntu / Debian)
+Run the automated installer on your VPS or dedicated server:
+```bash
+sudo bash deploy/install.sh
+```
+The installer configures Nginx, PHP-FPM, Docker, PostgreSQL client, writes production environment parameters, and launches system services.
+
+### Method B: Graphical Web Setup Wizard (`/install.php`)
+When deploying Astrial Panel on a new server, open your browser to:
+```
+http://YOUR_SERVER_IP/install.php
+# or https://panel.yourdomain.com/install.php
+```
+The interactive wizard guides you through:
+1. **Live PostgreSQL Connection Test:** Verifies host, port, credentials, and connectivity before proceeding.
+2. **Environment & Domain Setup:** Sets your public panel domain, company/brand name, and primary node FQDN.
+3. **Root Administrator Account Creation:** Custom admin email, username, and password with secure bcrypt hashing.
+4. **Automated Migration & Lock:** Runs database table migrations, seeds 44+ game egg engines, creates the `.env` file, and locks the installer (`installed.lock`) against unauthorized access.
+
+### Method C: Environment Configuration (`.env`)
+Astrial Panel reads configuration from `.env` or system environment variables:
+```bash
+cp .env.example .env
+nano .env
+```
+Key configuration parameters:
+- `APP_URL`: Your public domain (e.g., `https://panel.yourhosting.com`).
+- `DATABASE_URL`: PostgreSQL connection string (`postgres://user:pass@host:5432/dbname?sslmode=disable`).
+- `PANEL_API_URL`: Internal API endpoint (`http://127.0.0.1:8080`). In production, Nginx reverse proxies `/api/` directly to this service, so port `:8080` remains internal and is never exposed to public internet traffic.
+- `DAEMON_URL`: Node daemon connection endpoint (e.g., `http://node1.yourhosting.com:8081`).
+
+---
+
+## Local Development & Testing
+
+### Prerequisites
+- Docker & Docker Compose
+- Go 1.22+
+- PHP 8.0+ & Nginx
+
 ### 1. Launch Infrastructure Services
 ```bash
 docker compose -f docker-compose.dev.yml up -d
 ```
-This spins up:
-- PostgreSQL 16 on `:5432`
-- Redis 7 on `:6379`
-- Mailpit (SMTP `:1025`, Web UI `:8025`)
+Spins up PostgreSQL 16 (`:5432`), Redis 7 (`:6379`), and Mailpit (`:1025`/`:8025`).
 
 ### 2. Compile & Run the Control Plane API
 ```bash
@@ -126,7 +167,7 @@ cd panel-api
 go build -o /usr/local/bin/astrial-api .
 astrial-api
 ```
-The API starts on port `:8080` and automatically runs database schema migrations and seeds default templates.
+The API starts on port `:8080` (internally accessed by Nginx and `/install.php`).
 
 ### 3. Compile & Run the Node Daemon
 ```bash
@@ -134,10 +175,10 @@ cd daemon
 go build -o /usr/local/bin/astrial-daemon .
 astrial-daemon
 ```
-The daemon starts on port `:8081` and connects to `/var/run/docker.sock`.
+The daemon starts on port `:8081` and connects directly to `/var/run/docker.sock`.
 
 ### 4. Start the Web Frontend
-Serve `web-php` via Nginx or PHP's built-in development server:
+Serve `web-php` via Nginx or PHP:
 ```bash
 cd web-php
 php -S 0.0.0.0:8000

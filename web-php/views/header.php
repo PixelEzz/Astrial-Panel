@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/../helpers.php';
+if (!isInstalled()) {
+    header('Location: /install.php');
+    exit;
+}
 $api = new ApiClient();
 $theme = $api->get('/api/theme');
 $companyName = $theme['company_name'] ?? 'Astrial Panel';

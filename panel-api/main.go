@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -27,11 +28,64 @@ type UserSession struct {
 	Role   string `json:"role"`
 }
 
-func main() {
-	dbURL := os.Getenv("DATABASE_URL")
-	if dbURL == "" {
-		dbURL = "postgres://postgres:postgres@localhost:5432/gamepanel?sslmode=disable"
+func loadEnvFile(paths ...string) {
+	for _, p := range paths {
+		data, err := os.ReadFile(p)
+		if err != nil {
+			continue
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				k := strings.TrimSpace(parts[0])
+				v := strings.TrimSpace(parts[1])
+				v = strings.Trim(v, `"'`)
+				if os.Getenv(k) == "" {
+					os.Setenv(k, v)
+				}
+			}
+		}
 	}
+}
+
+func getDatabaseURL() string {
+	if url := os.Getenv("DATABASE_URL"); url != "" {
+		return url
+	}
+	host := os.Getenv("DB_HOST")
+	if host == "" {
+		host = "localhost"
+	}
+	port := os.Getenv("DB_PORT")
+	if port == "" {
+		port = "5432"
+	}
+	user := os.Getenv("DB_USER")
+	if user == "" {
+		user = "postgres"
+	}
+	pass := os.Getenv("DB_PASSWORD")
+	if pass == "" {
+		pass = "postgres"
+	}
+	name := os.Getenv("DB_NAME")
+	if name == "" {
+		name = "gamepanel"
+	}
+	ssl := os.Getenv("DB_SSLMODE")
+	if ssl == "" {
+		ssl = "disable"
+	}
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s", user, pass, host, port, name, ssl)
+}
+
+func main() {
+	loadEnvFile(".env", "../.env", "/home/ubuntu/game panel/.env", "web-php/.env")
+	dbURL := getDatabaseURL()
 	port := os.Getenv("API_PORT")
 	if port == "" {
 		port = "8080"
@@ -43,15 +97,14 @@ func main() {
 
 	db, err := InitDB(dbURL)
 	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
-	}
-	log.Printf("[DB] Connected to PostgreSQL 16 and migrations applied successfully")
-
-	// Seed Eggs
-	if err := db.SeedEggLibrary(eggsDir); err != nil {
-		log.Printf("Egg seeding warning: %v", err)
+		log.Printf("[DB WARNING] Could not connect to database on startup: %v. Ready for setup at /install.php", err)
 	} else {
-		log.Printf("[Eggs] Pre-seeded 40+ production game eggs from %s", eggsDir)
+		log.Printf("[DB] Connected to PostgreSQL 16 and migrations applied successfully")
+		if err := db.SeedEggLibrary(eggsDir); err != nil {
+			log.Printf("Egg seeding warning: %v", err)
+		} else {
+			log.Printf("[Eggs] Pre-seeded 40+ production game eggs from %s", eggsDir)
+		}
 	}
 
 	app := &App{
@@ -66,6 +119,10 @@ func main() {
 	mux.HandleFunc("/api/auth/login", app.handleLogin)
 	mux.HandleFunc("/api/auth/register", app.handleRegister)
 	mux.HandleFunc("/api/auth/me", app.handleMe)
+
+	// Installer & Setup Wizard
+	mux.HandleFunc("/api/install/test-db", app.handleTestDB)
+	mux.HandleFunc("/api/install/setup", app.handleInstallSetup)
 
 	// Users (Admin)
 	mux.HandleFunc("/api/admin/users", app.handleUsers)
@@ -695,4 +752,190 @@ func (app *App) handleModrinthSearch(w http.ResponseWriter, r *http.Request) {
 		{"id": "dynmap", "title": "Dynmap", "description": "A Google Maps style live web map for your Minecraft server.", "downloads": 1800000, "icon_url": "https://cdn.modrinth.com/data/dynmap/icon.png"},
 	}
 	json.NewEncoder(w).Encode(plugins)
+}
+
+type InstallTestDBRequest struct {
+	Host     string `json:"db_host"`
+	Port     string `json:"db_port"`
+	User     string `json:"db_user"`
+	Password string `json:"db_password"`
+	Name     string `json:"db_name"`
+	SSLMode  string `json:"db_ssl"`
+}
+
+type InstallSetupRequest struct {
+	DBHost        string `json:"db_host"`
+	DBPort        string `json:"db_port"`
+	DBUser        string `json:"db_user"`
+	DBPassword    string `json:"db_password"`
+	DBName        string `json:"db_name"`
+	DBSSL         string `json:"db_ssl"`
+	PanelURL      string `json:"panel_url"`
+	CompanyName   string `json:"company_name"`
+	AdminEmail    string `json:"admin_email"`
+	AdminPassword string `json:"admin_password"`
+	AdminName     string `json:"admin_name"`
+	NodeName      string `json:"node_name"`
+	NodeFQDN      string `json:"node_fqdn"`
+	NodeDaemonURL string `json:"node_daemon_url"`
+}
+
+func (app *App) handleTestDB(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		return
+	}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	var req InstallTestDBRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Invalid request payload"})
+		return
+	}
+	if req.Port == "" {
+		req.Port = "5432"
+	}
+	if req.SSLMode == "" {
+		req.SSLMode = "disable"
+	}
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		req.User, req.Password, req.Host, req.Port, req.Name, req.SSLMode)
+
+	testDB, err := sql.Open("postgres", connStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": err.Error()})
+		return
+	}
+	defer testDB.Close()
+
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
+
+	if err := testDB.PingContext(ctx); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": err.Error()})
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "Database connection verified successfully!"})
+}
+
+func (app *App) handleInstallSetup(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		return
+	}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req InstallSetupRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Invalid JSON: " + err.Error()})
+		return
+	}
+
+	if req.AdminEmail == "" || len(req.AdminPassword) < 6 {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Admin email and password (minimum 6 characters) are required"})
+		return
+	}
+	if req.DBPort == "" {
+		req.DBPort = "5432"
+	}
+	if req.DBSSL == "" {
+		req.DBSSL = "disable"
+	}
+	if req.CompanyName == "" {
+		req.CompanyName = "Astrial Panel"
+	}
+
+	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
+		req.DBUser, req.DBPassword, req.DBHost, req.DBPort, req.DBName, req.DBSSL)
+
+	db, err := InitDB(connStr)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]interface{}{"success": false, "error": "Database initialization failed: " + err.Error()})
+		return
+	}
+
+	app.mu.Lock()
+	app.db = db
+	app.mu.Unlock()
+
+	// Seed Eggs
+	eggsDir := os.Getenv("EGGS_DIR")
+	if eggsDir == "" {
+		eggsDir = "/home/ubuntu/game panel/eggs"
+	}
+	_ = db.SeedEggLibrary(eggsDir)
+
+	// Create root admin user with exact user credentials
+	hashedPW := HashPassword(req.AdminPassword)
+	_, _ = db.Exec(`INSERT INTO users (id, email, password_hash, role) 
+		VALUES ('user_admin', $1, $2, 'admin') 
+		ON CONFLICT (id) DO UPDATE SET email = EXCLUDED.email, password_hash = EXCLUDED.password_hash`,
+		req.AdminEmail, hashedPW)
+
+	// Set Company Name in Theme
+	_, _ = db.Exec(`UPDATE theme_settings SET company_name = $1 WHERE id = 1`, req.CompanyName)
+
+	// Update node if specified
+	if req.NodeFQDN != "" {
+		daemonURL := req.NodeDaemonURL
+		if daemonURL == "" {
+			daemonURL = "http://" + req.NodeFQDN + ":8081"
+		}
+		_, _ = db.Exec(`UPDATE nodes SET fqdn = $1, daemon_url = $2 WHERE id = 'node_wsl'`, req.NodeFQDN, daemonURL)
+	}
+
+	// Write .env
+	envContent := fmt.Sprintf(`# Astrial Panel Production Configuration
+APP_ENV=production
+APP_URL=%s
+APP_NAME="%s"
+
+# Database Configuration (PostgreSQL 16)
+DATABASE_URL=%s
+DB_HOST=%s
+DB_PORT=%s
+DB_USER=%s
+DB_PASSWORD=%s
+DB_NAME=%s
+DB_SSLMODE=%s
+
+# API Configuration
+API_PORT=8080
+PANEL_API_URL=http://127.0.0.1:8080
+`, req.PanelURL, req.CompanyName, connStr, req.DBHost, req.DBPort, req.DBUser, req.DBPassword, req.DBName, req.DBSSL)
+
+	_ = os.WriteFile(".env", []byte(envContent), 0644)
+	_ = os.WriteFile("../.env", []byte(envContent), 0644)
+	_ = os.WriteFile("/home/ubuntu/game panel/.env", []byte(envContent), 0644)
+
+	// Create installed.lock
+	lockContent := []byte(time.Now().Format(time.RFC3339) + "\n")
+	_ = os.WriteFile("installed.lock", lockContent, 0644)
+	_ = os.WriteFile("../installed.lock", lockContent, 0644)
+	_ = os.WriteFile("/home/ubuntu/game panel/installed.lock", lockContent, 0644)
+	_ = os.WriteFile("/home/ubuntu/game panel/web-php/installed.lock", lockContent, 0644)
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success":     true,
+		"message":     "Astrial Panel installed successfully!",
+		"admin_email": req.AdminEmail,
+	})
 }

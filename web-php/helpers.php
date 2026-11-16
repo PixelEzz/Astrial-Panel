@@ -1,11 +1,49 @@
 <?php
 declare(strict_types=1);
 
+function loadEnv(): void {
+    $paths = [
+        __DIR__ . '/.env',
+        __DIR__ . '/../.env',
+        '/home/ubuntu/game panel/.env'
+    ];
+    foreach ($paths as $path) {
+        if (!file_exists($path)) continue;
+        $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if (!$lines) continue;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if (empty($line) || str_starts_with($line, '#')) continue;
+            $parts = explode('=', $line, 2);
+            if (count($parts) === 2) {
+                $key = trim($parts[0]);
+                $val = trim(trim($parts[1]), '"\'');
+                if (getenv($key) === false) {
+                    putenv("{$key}={$val}");
+                    $_ENV[$key] = $val;
+                }
+            }
+        }
+    }
+}
+loadEnv();
+
+function isInstalled(): bool {
+    return file_exists(__DIR__ . '/installed.lock') || 
+           file_exists(__DIR__ . '/../installed.lock') ||
+           file_exists('/home/ubuntu/game panel/installed.lock');
+}
+
 class ApiClient {
     private string $baseUrl;
 
-    public function __construct(string $baseUrl = 'http://127.0.0.1:8080') {
-        $this->baseUrl = rtrim($baseUrl, '/');
+    public function __construct(?string $baseUrl = null) {
+        if ($baseUrl === null) {
+            $envUrl = getenv('PANEL_API_URL') ?: getenv('API_URL');
+            $this->baseUrl = rtrim($envUrl ?: 'http://127.0.0.1:8080', '/');
+        } else {
+            $this->baseUrl = rtrim($baseUrl, '/');
+        }
     }
 
     public function get(string $endpoint): array {

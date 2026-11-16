@@ -17,6 +17,7 @@ deploy/docker/mailpit
 .env
 .env.local
 .env.*.local
+installed.lock
 node_modules/
 venv/
 .venv/
