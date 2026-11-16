@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "FiveM (txAdmin + FXServer)",
+  "category": "gta",
+  "author": "support@gamepanel.io",
+  "description": "Multiplayer framework for GTA V allowing customized servers, scripts and game modes.",
+  "docker_images": {
+    "FiveM": "traskin/fxserver:recommended",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "/opt/cfx-server/run.sh +set serverProfile default +set txAdminPort {{TXADMIN_PORT}} +exec server.cfg",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Server license key is active"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'sv_licenseKey changeme' > server.cfg",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "txAdmin Port",
+      "env_variable": "TXADMIN_PORT",
+      "default_value": "40120",
+      "user_viewable": true,
+      "user_editable": false,
+      "rules": "required|numeric"
+    },
+    {
+      "name": "Server Name",
+      "env_variable": "SERVER_NAME",
+      "default_value": "My FiveM Server",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

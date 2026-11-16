@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Generic Alpine Linux Container",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Ultra-minimal Alpine Linux container for running custom scripts and tasks.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "sh -c 'echo \"[Container] Online\"; while true; do read cmd; if [ -n \"$cmd\" ]; then echo \"[Console] $cmd\"; fi; done'",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "[Container] Online"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'alpine container ready' > ready.txt",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

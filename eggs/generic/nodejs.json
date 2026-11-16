@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Node.js (Discord Bots & Web Apps)",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Run high-performance JavaScript/TypeScript servers, Discord.js bots, and APIs.",
+  "docker_images": {
+    "Node 20": "alpine:latest",
+    "Node 18": "alpine:latest"
+  },
+  "startup": "if [ -f package.json ]; then npm install; fi; node {{JS_FILE}}",
+  "config": {
+    "files": {
+      "package.json": {
+        "parser": "json"
+      }
+    },
+    "startup": {
+      "done": "Ready"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo '{\"name\":\"bot\",\"main\":\"index.js\"}' > package.json; echo 'console.log(\"Node server ready\"); setInterval(() => {}, 1000);' > index.js",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Main JS File",
+      "env_variable": "JS_FILE",
+      "default_value": "index.js",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

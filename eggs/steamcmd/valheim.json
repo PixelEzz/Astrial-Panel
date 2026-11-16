@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Valheim",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "A brutal exploration and survival game for 1-10 players set in a procedurally-generated purgatory.",
+  "docker_images": {
+    "Debian": "ghcr.io/parkervcp/yolks:debian",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./valheim_server.x86_64 -name \"{{SERVER_NAME}}\" -port {{SERVER_PORT}} -world \"{{WORLD_NAME}}\" -password \"{{SERVER_PASS}}\"",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Game server connected"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'valheim ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Server Name",
+      "env_variable": "SERVER_NAME",
+      "default_value": "My Valheim Server",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

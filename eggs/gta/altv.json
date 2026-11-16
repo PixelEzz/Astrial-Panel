@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "alt:V Multiplayer",
+  "category": "gta",
+  "author": "support@gamepanel.io",
+  "description": "Free third-party multiplayer modification for Grand Theft Auto V.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./altv-server",
+  "config": {
+    "files": {
+      "server.toml": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Main thread started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'altv ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

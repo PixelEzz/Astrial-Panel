@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Generic Ubuntu Container",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Standard Ubuntu environment for general hosting, bots, and tools.",
+  "docker_images": {
+    "Ubuntu": "alpine:latest"
+  },
+  "startup": "sh -c 'echo \"[Ubuntu Container] Online\"; while true; do read cmd; if [ -n \"$cmd\" ]; then echo \"[Console] $cmd\"; fi; done'",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "[Ubuntu Container] Online"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'ubuntu container ready' > ready.txt",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

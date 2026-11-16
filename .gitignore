@@ -1,0 +1,36 @@
+# Binaries and compiled outputs
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+gamepanel-api
+gamepanel-daemon
+astrial-api
+astrial-daemon
+deploy/docker/mailpit
+
+# Environments and dependencies
+.env
+.env.local
+.env.*.local
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# IDE and Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/

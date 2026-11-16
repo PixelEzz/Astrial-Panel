@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Counter-Strike 2 (CS2)",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Counter-Strike 2 Dedicated Server on Source 2 engine.",
+  "docker_images": {
+    "Source": "ghcr.io/pterodactyl/games:source",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./game/bin/linuxsteamrt64/cs2 -dedicated +ip 0.0.0.0 -port {{SERVER_PORT}} +map {{SERVER_MAP}}",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "GC Connection established for server"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'cs2 ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Default Map",
+      "env_variable": "SERVER_MAP",
+      "default_value": "de_dust2",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

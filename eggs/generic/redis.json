@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Redis Standalone Caching Node",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "In-memory data structure store used as a database, cache, and message broker.",
+  "docker_images": {
+    "Redis": "local/redis:7",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "redis-server --protected-mode no --port {{SERVER_PORT}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Ready to accept connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'redis ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "RAGE Multiplayer",
+  "category": "gta",
+  "author": "support@gamepanel.io",
+  "description": "A popular GTA V multiplayer framework supporting massive playercounts.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./ragemp-server",
+  "config": {
+    "files": {
+      "conf.json": {
+        "parser": "json"
+      }
+    },
+    "startup": {
+      "done": "Started server on"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'ragemp ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

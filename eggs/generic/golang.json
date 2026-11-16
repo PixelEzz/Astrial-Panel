@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Go (Golang High-Concurrency)",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Compile and run lightning-fast Go binaries and microservices.",
+  "docker_images": {
+    "Go 1.23": "alpine:latest"
+  },
+  "startup": "./{{EXECUTABLE}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Listening"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'go app ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Executable Name",
+      "env_variable": "EXECUTABLE",
+      "default_value": "server",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

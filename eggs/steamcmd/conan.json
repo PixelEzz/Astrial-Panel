@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Conan Exiles",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "An online multiplayer survival game set in the lands of Conan the Barbarian.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./ConanSandboxServer.exe",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Game engine initialized"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'conan ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

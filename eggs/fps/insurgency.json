@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Insurgency: Sandstorm",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Team-based, tactical FPS based on lethal close-quarters combat.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./InsurgencyServer.sh -Port={{SERVER_PORT}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Ready for client connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'insurgency ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

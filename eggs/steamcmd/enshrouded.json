@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Enshrouded",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Action RPG survival game set within a vast voxel-based continent.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./enshrouded_server.exe",
+  "config": {
+    "files": {
+      "enshrouded_server.json": {
+        "parser": "json"
+      }
+    },
+    "startup": {
+      "done": "Host online"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'enshrouded ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

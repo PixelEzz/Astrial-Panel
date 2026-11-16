@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Python (Discord.py & FastAPI)",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Run Python bots, machine learning services, Flask, and FastAPI apps.",
+  "docker_images": {
+    "Python 3": "alpine:latest"
+  },
+  "startup": "if [ -f requirements.txt ]; then pip install -r requirements.txt; fi; python3 {{PY_FILE}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'print(\"Python app running\")' > main.py",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Main Python File",
+      "env_variable": "PY_FILE",
+      "default_value": "main.py",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

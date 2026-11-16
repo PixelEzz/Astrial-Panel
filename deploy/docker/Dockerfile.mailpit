@@ -1,0 +1,4 @@
+FROM alpine:latest
+COPY mailpit /usr/local/bin/mailpit
+EXPOSE 1025 8025
+CMD ["/usr/local/bin/mailpit"]

@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "V Rising",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Awaken as a weakened vampire after centuries of slumber.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./VRisingServer.exe -serverName \"{{SERVER_NAME}}\"",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Steamworks ready"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'vrising ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

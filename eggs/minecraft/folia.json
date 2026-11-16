@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Folia",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "Folia is a new Paper fork that adds regional multithreading to the dedicated server.",
+  "docker_images": {
+    "Java 21": "ghcr.io/pterodactyl/yolks:java_21",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar folia.jar",
+  "config": {
+    "files": {
+      "server.properties": {
+        "parser": "properties"
+      }
+    },
+    "startup": {
+      "done": ")! For help, type "
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'eula=true' > eula.txt",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

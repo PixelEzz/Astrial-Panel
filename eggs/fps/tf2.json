@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Team Fortress 2",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Nine distinct classes provide a broad range of tactical abilities and personalities.",
+  "docker_images": {
+    "Source": "ghcr.io/pterodactyl/games:source",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./srcds_run -game tf +map {{SERVER_MAP}} -port {{SERVER_PORT}} +maxplayers {{MAX_PLAYERS}}",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Connection to Steam servers successful"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'tf2 ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

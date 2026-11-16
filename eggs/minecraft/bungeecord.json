@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "BungeeCord",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "BungeeCord proxy connects multiple Minecraft servers together.",
+  "docker_images": {
+    "Java 17": "ghcr.io/pterodactyl/yolks:java_17",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar BungeeCord.jar",
+  "config": {
+    "files": {
+      "config.yml": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Listening on "
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'bungee installed'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

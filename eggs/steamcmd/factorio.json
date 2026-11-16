@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Factorio",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Factorio is a game in which you build and maintain factories.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./bin/x64/factorio --start-server-load-latest --server-settings data/server-settings.json --port {{SERVER_PORT}}",
+  "config": {
+    "files": {
+      "server-settings.json": {
+        "parser": "json"
+      }
+    },
+    "startup": {
+      "done": "Hosting game at port "
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'factorio ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

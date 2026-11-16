@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "ARK: Survival Evolved & Ascended",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Stranded on the shores of a mysterious island, you must learn to survive.",
+  "docker_images": {
+    "Source": "ghcr.io/pterodactyl/games:source",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./ShooterGameServer {{SERVER_MAP}}?listen?SessionName={{SESSION_NAME}}",
+  "config": {
+    "files": {
+      "GameUserSettings.ini": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Server has successfully started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'ark installed'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Forge",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "Minecraft Forge mod loader server.",
+  "docker_images": {
+    "Java 17": "ghcr.io/pterodactyl/yolks:java_17",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar forge.jar",
+  "config": {
+    "files": {
+      "server.properties": {
+        "parser": "properties"
+      }
+    },
+    "startup": {
+      "done": ")! For help, type "
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'eula=true' > eula.txt",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

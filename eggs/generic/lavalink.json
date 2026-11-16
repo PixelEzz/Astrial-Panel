@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Lavalink (Audio Server)",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Standalone audio sending node based on Lavaplayer for Discord music bots.",
+  "docker_images": {
+    "Java 17": "alpine:latest"
+  },
+  "startup": "java -Xmx{{SERVER_MEMORY}}M -jar Lavalink.jar",
+  "config": {
+    "files": {
+      "application.yml": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Lavalink is ready to accept connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'lavalink ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

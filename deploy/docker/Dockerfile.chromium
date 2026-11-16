@@ -1,0 +1,2 @@
+FROM alpine:latest
+RUN echo -e 'http://dl-cdn.alpinelinux.org/alpine/v3.16/main\nhttp://dl-cdn.alpinelinux.org/alpine/v3.16/community' > /etc/apk/repositories && apk add --no-cache chromium nodejs

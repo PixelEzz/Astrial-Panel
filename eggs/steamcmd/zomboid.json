@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Project Zomboid",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Project Zomboid is the ultimate in zombie survival.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./start-server.sh -servername \"{{SERVER_NAME}}\"",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "SERVER STARTED"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'pz ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Garry's Mod (GMod)",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Garry's Mod is a physics sandbox with endless community game modes.",
+  "docker_images": {
+    "Source": "ghcr.io/pterodactyl/games:source",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./srcds_run -game garrysmod +gamemode {{GAMEMODE}} +map {{SERVER_MAP}} -port {{SERVER_PORT}} +maxplayers {{MAX_PLAYERS}}",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Server is hibernating"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'gmod ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Gamemode",
+      "env_variable": "GAMEMODE",
+      "default_value": "sandbox",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

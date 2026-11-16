@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Terraria (TShock)",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "TShock for Terraria dedicated server with plugins and anti-cheat.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./TShock.Server -port {{SERVER_PORT}} -maxplayers {{MAX_PLAYERS}} -world {{WORLD_NAME}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Server started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'terraria ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

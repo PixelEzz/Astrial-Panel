@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Bedrock Dedicated Server",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "Official Minecraft Bedrock Dedicated Server software from Mojang.",
+  "docker_images": {
+    "Ubuntu": "ghcr.io/parkervcp/yolks:debian",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./bedrock_server",
+  "config": {
+    "files": {
+      "server.properties": {
+        "parser": "properties"
+      }
+    },
+    "startup": {
+      "done": "Server started."
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'bedrock ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

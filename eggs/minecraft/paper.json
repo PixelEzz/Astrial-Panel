@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "version": "PTDL_v2",
+    "update_url": null
+  },
+  "name": "Paper",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "High performance Minecraft server software aiming to fix gameplay and mechanics inconsistencies.",
+  "features": [
+    "eula",
+    "java_version"
+  ],
+  "docker_images": {
+    "Java 17": "ghcr.io/pterodactyl/yolks:java_17",
+    "Java 21": "ghcr.io/pterodactyl/yolks:java_21",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}",
+  "config": {
+    "files": {
+      "server.properties": {
+        "parser": "properties",
+        "find": {
+          "server-port": "{{SERVER_PORT}}"
+        }
+      }
+    },
+    "startup": {
+      "done": ")! For help, type "
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "#!/bin/sh\napk add --no-cache curl jq\nLATEST=$(curl -s https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds | jq '.builds[-1].build')\ncurl -o server.jar https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/${LATEST}/downloads/paper-1.20.4-${LATEST}.jar || echo 'eula=true' > eula.txt\necho 'eula=true' > eula.txt\n",
+      "container": "alpine:latest",
+      "entrypoint": "sh"
+    }
+  },
+  "variables": [
+    {
+      "name": "Server Jar File",
+      "env_variable": "SERVER_JARFILE",
+      "default_value": "server.jar",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    },
+    {
+      "name": "Minecraft Version",
+      "env_variable": "MINECRAFT_VERSION",
+      "default_value": "1.20.4",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|string"
+    }
+  ]
+}

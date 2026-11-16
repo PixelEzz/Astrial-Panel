@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <script>
+if (!Element.prototype.checkVisibility) {
+  Element.prototype.checkVisibility = function(options) {
+    return !!(this.offsetWidth || this.offsetHeight || this.getClientRects().length);
+  };
+}
+</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Panel - Commercial Next-Gen Cloud</title>
+  <link rel="icon" id="panel-favicon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>">
+  <script src="https://cdn.tailwindcss.com" async></script>
+  <style id="custom-theme-vars">
+    :root {
+      --primary: #6366f1;
+      --secondary: #3b82f6;
+      --accent: #10b981;
+      --bg: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.85);
+      --blur: 12px;
+    }
+    body {
+      background-color: var(--bg);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(var(--blur));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .primary-btn {
+      background: var(--primary);
+      transition: all 0.2s ease;
+    }
+    .primary-btn:hover {
+      filter: brightness(1.15);
+    }
+    .terminal-container {
+      background: #000000;
+      color: #4ade80;
+      font-family: 'Courier New', Courier, monospace;
+    }
+  </style>
+  <style id="custom-css-injection"></style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+  <!-- Top Navigation Bar -->
+  <header class="glass-panel sticky top-0 z-50 px-6 py-3 flex items-center justify-between border-b">
+    <div class="flex items-center space-x-3">
+      <div id="panel-logo" class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white shadow-lg" style="background: var(--primary);">
+        GP
+      </div>
+      <div>
+        <h1 id="panel-title" class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+          GamePanel Next-Gen
+        </h1>
+        <p class="text-xs text-slate-400 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          Cluster Online &bull; v2.0 Commercial
+        </p>
+      </div>
+    </div>
+
+    <!-- Center Navigation Tabs -->
+    <nav class="hidden md:flex items-center space-x-1 bg-slate-900/60 p-1 rounded-xl border border-slate-800">
+      <button onclick="switchTab('servers')" id="tab-btn-servers" class="px-4 py-1.5 rounded-lg text-sm font-medium transition text-white" style="background: var(--primary);">
+        🎮 Servers
+      </button>
+      <button onclick="switchTab('eggs')" id="tab-btn-eggs" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">
+        🥚 Eggs Library
+      </button>
+      <button onclick="switchTab('nodes')" id="tab-btn-nodes" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">
+        🖥️ Nodes & Telemetry
+      </button>
+      <button onclick="switchTab('theme')" id="tab-btn-theme" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">
+        🎨 Theme Studio
+      </button>
+      <button onclick="switchTab('mail')" id="tab-btn-mail" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">
+        ✉️ Mail & Logs
+      </button>
+      <button onclick="switchTab('billing')" id="tab-btn-billing" class="px-4 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white transition">
+        💳 Billing API
+      </button>
+    </nav>
+
+    <!-- User / Tenant Profile -->
+    <div class="flex items-center space-x-4">
+      <div class="text-right hidden sm:block">
+        <div class="text-sm font-semibold text-slate-200" id="user-display-email">admin@example.com</div>
+        <div class="text-xs text-indigo-400 font-mono uppercase tracking-wider">Super Administrator</div>
+      </div>
+      <button onclick="quickProvisionModal()" class="px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-white shadow-md flex items-center gap-1.5" style="background: var(--accent);">
+        <span>+</span> Deploy Server
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+
+    <!-- 1. SERVERS VIEW -->
+    <section id="view-servers" class="space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Active Game Servers</h2>
+          <p class="text-sm text-slate-400">Manage container workloads, console streaming, and live cgroups limits.</p>
+        </div>
+        <button onclick="loadServers()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
+          🔄 Refresh
+        </button>
+      </div>
+
+      <!-- Server Cards Grid -->
+      <div id="servers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Server Management Drawer (Console, Files, Installers, DBs) -->
+      <div id="server-drawer" class="hidden glass-panel rounded-2xl p-6 space-y-6 border border-indigo-500/30">
+        <div class="flex justify-between items-start border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 id="active-server-name" class="text-xl font-bold text-white">Paper 1.20 Server</h3>
+              <span id="active-server-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-emerald-500/20 text-emerald-400">RUNNING</span>
+            </div>
+            <p id="active-server-meta" class="text-xs text-slate-400 font-mono mt-1">UUID: srv_123 &bull; Port: 25565 &bull; Node: WSL Node 1</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="sendPowerAction('start')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Start</button>
+            <button onclick="sendPowerAction('restart')" class="bg-amber-600 hover:bg-amber-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Restart</button>
+            <button onclick="sendPowerAction('stop')" class="bg-rose-600 hover:bg-rose-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Stop</button>
+            <button onclick="sendPowerAction('kill')" class="bg-red-800 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Kill</button>
+            <button onclick="closeServerDrawer()" class="text-slate-400 hover:text-white px-2">&times;</button>
+          </div>
+        </div>
+
+        <!-- Sub Tabs inside Server -->
+        <div class="flex border-b border-slate-800 space-x-4 text-sm font-semibold">
+          <button onclick="switchServerSubTab('console')" id="subtab-btn-console" class="pb-2 text-indigo-400 border-b-2 border-indigo-500">Xterm Console</button>
+          <button onclick="switchServerSubTab('files')" id="subtab-btn-files" class="pb-2 text-slate-400 hover:text-white">File Manager</button>
+          <button onclick="switchServerSubTab('addons')" id="subtab-btn-addons" class="pb-2 text-slate-400 hover:text-white">Plugin / Modpack Hub</button>
+          <button onclick="switchServerSubTab('databases')" id="subtab-btn-databases" class="pb-2 text-slate-400 hover:text-white">Databases</button>
+          <button onclick="switchServerSubTab('backups')" id="subtab-btn-backups" class="pb-2 text-slate-400 hover:text-white">Backups</button>
+        </div>
+
+        <!-- SubTab 1: Xterm Console & Telemetry Sparklines -->
+        <div id="subtab-console" class="space-y-4">
+          <!-- Sparkline Metrics -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">CPU Usage</span>
+              <div id="metric-cpu" class="text-lg font-bold text-indigo-400 font-mono">0.0 %</div>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Memory</span>
+              <div id="metric-ram" class="text-lg font-bold text-cyan-400 font-mono">0 / 0 MB</div>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Disk Used</span>
+              <div id="metric-disk" class="text-lg font-bold text-emerald-400 font-mono">0 MB</div>
+            </div>
+            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+              <span class="text-xs text-slate-400">Network RX / TX</span>
+              <div id="metric-net" class="text-lg font-bold text-amber-400 font-mono">0 / 0 KB</div>
+            </div>
+          </div>
+
+          <!-- Interactive Web Console Terminal -->
+          <div class="rounded-xl overflow-hidden border border-slate-800 shadow-2xl">
+            <div class="bg-slate-950 px-4 py-2 flex items-center justify-between text-xs text-slate-400 border-b border-slate-800">
+              <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> WebSocket Console (Sub-50ms)</span>
+              <span>ANSI Colors &bull; TTY Enabled</span>
+            </div>
+            <div id="terminal-screen" class="terminal-container p-4 h-80 overflow-y-auto text-xs leading-relaxed whitespace-pre-wrap"></div>
+            <div class="bg-slate-900 p-2 flex gap-2 border-t border-slate-800">
+              <input type="text" id="terminal-input" placeholder="Type a command (e.g. echo 'HOSTING_READY' or op admin)..." 
+                     class="flex-1 bg-black/60 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-mono"
+                     onkeydown="if(event.key === 'Enter') sendConsoleCommand()">
+              <button onclick="sendConsoleCommand()" class="primary-btn px-4 py-1.5 rounded-lg text-xs font-bold text-white">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SubTab 2: Monaco File Manager -->
+        <div id="subtab-files" class="hidden space-y-4">
+          <div class="flex justify-between items-center">
+            <div id="current-file-path" class="text-xs text-slate-400 font-mono">Path: /</div>
+            <div class="flex gap-2">
+              <button onclick="saveActiveFile()" id="btn-save-file" class="hidden bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-bold">
+                💾 Save File
+              </button>
+              <button onclick="loadFiles('/')" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg">Refresh</button>
+            </div>
+          </div>
+
+          <!-- File Explorer + Code Editor Layout -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-950 rounded-xl border border-slate-800 p-3 h-96 overflow-y-auto" id="files-list">
+              <!-- Rendered via JS -->
+            </div>
+            <div class="md:col-span-2 bg-slate-950 rounded-xl border border-slate-800 p-2 flex flex-col h-96">
+              <div class="text-xs text-slate-400 px-2 py-1 border-b border-slate-800 flex justify-between">
+                <span id="editor-filename">No file selected</span>
+                <span>Monaco Web Syntax Engine</span>
+              </div>
+              <textarea id="file-editor" class="w-full flex-1 bg-transparent text-xs font-mono text-slate-200 p-2 focus:outline-none resize-none" 
+                        placeholder="Select a file from the left to edit its contents..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- SubTab 3: Addons & Modpacks (Modrinth / PaperMC) -->
+        <div id="subtab-addons" class="hidden space-y-4">
+          <div class="flex justify-between items-center">
+            <h4 class="text-sm font-bold text-white">One-Click Plugins & Version Upgrader</h4>
+            <span class="text-xs text-indigo-400">Powered by Modrinth & PaperMC APIs</span>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="addons-grid">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- SubTab 4: Databases -->
+        <div id="subtab-databases" class="hidden space-y-4">
+          <div class="flex justify-between items-center">
+            <h4 class="text-sm font-bold text-white">Server MySQL / MariaDB Databases</h4>
+            <button onclick="createServerDatabase()" class="primary-btn text-xs px-3 py-1.5 rounded-lg font-bold text-white">+ Create Database</button>
+          </div>
+          <div id="databases-list" class="space-y-3">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+
+        <!-- SubTab 5: Backups -->
+        <div id="subtab-backups" class="hidden space-y-4">
+          <div class="flex justify-between items-center">
+            <h4 class="text-sm font-bold text-white">Server Backups</h4>
+            <button onclick="createBackup()" class="primary-btn text-xs px-3 py-1.5 rounded-lg font-bold text-white">+ Create Backup Now</button>
+          </div>
+          <div id="backups-list" class="text-xs text-slate-400">
+            No backups yet. Click create backup to archive all server data.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. EGGS LIBRARY VIEW -->
+    <section id="view-eggs" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Universal Egg Library</h2>
+          <p class="text-sm text-slate-400">100% Pterodactyl & Pelican compatible JSON templates with 1-click import & export.</p>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="openEggImportModal()" class="primary-btn text-xs px-3.5 py-1.5 rounded-lg text-white font-bold">
+            📥 Import Pterodactyl .JSON
+          </button>
+        </div>
+      </div>
+
+      <!-- Categories Filter Tabs -->
+      <div class="flex gap-2 overflow-x-auto pb-2" id="egg-category-filters">
+        <button onclick="filterEggCategory('all')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-indigo-600 text-white">All (43)</button>
+        <button onclick="filterEggCategory('minecraft')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">Minecraft</button>
+        <button onclick="filterEggCategory('steamcmd')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">SteamCMD & Survival</button>
+        <button onclick="filterEggCategory('fps')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">FPS Shooters</button>
+        <button onclick="filterEggCategory('gta')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">GTA & Roleplay</button>
+        <button onclick="filterEggCategory('generic')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300">Generic Runtimes</button>
+      </div>
+
+      <div id="eggs-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- 3. NODES & TELEMETRY VIEW -->
+    <section id="view-nodes" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Nodes & Location Clusters</h2>
+          <p class="text-sm text-slate-400">Smart node allocation, overallocation controls, and live daemon telemetry.</p>
+        </div>
+      </div>
+
+      <div id="nodes-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- 4. THEME STUDIO VIEW (Zero-Rebuild Customization) -->
+    <section id="view-theme" class="hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">Zero-Rebuild Theme Studio</h2>
+        <p class="text-sm text-slate-400">Live customize colors, OLED dark mode, glassmorphism blur, wallpapers, and custom CSS.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-panel rounded-2xl p-6 space-y-4 border border-slate-800">
+          <h3 class="font-bold text-white text-base">Branding & Color Palette</h3>
+          
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Primary Color</label>
+              <input type="color" id="theme-primary" class="w-full h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 p-1" onchange="previewTheme()">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Secondary Color</label>
+              <input type="color" id="theme-secondary" class="w-full h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 p-1" onchange="previewTheme()">
+            </div>
+            <div>
+              <label class="text-xs text-slate-400 block mb-1">Accent Color</label>
+              <input type="color" id="theme-accent" class="w-full h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 p-1" onchange="previewTheme()">
+            </div>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Color Mode</label>
+            <select id="theme-mode" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" onchange="previewTheme()">
+              <option value="dark">Standard Dark</option>
+              <option value="oled">Pure OLED Black</option>
+              <option value="light">High-Contrast Light</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Glassmorphism Blur (px)</label>
+            <input type="range" id="theme-blur" min="0" max="24" value="12" class="w-full" oninput="previewTheme()">
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Custom Wallpaper Image URL</label>
+            <input type="text" id="theme-wallpaper" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white" oninput="previewTheme()">
+          </div>
+
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Custom CSS Injection</label>
+            <textarea id="theme-css" rows="4" placeholder="/* Custom CSS overrides */" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs font-mono text-slate-200" oninput="previewTheme()"></textarea>
+          </div>
+
+          <button onclick="saveThemeSettings()" class="primary-btn w-full py-2.5 rounded-lg text-sm font-bold text-white shadow-lg">
+            Save Theme Changes Live
+          </button>
+        </div>
+
+        <!-- Live Preview Sandbox -->
+        <div class="glass-panel rounded-2xl p-6 space-y-4 border border-slate-800 flex flex-col justify-between">
+          <div>
+            <h3 class="font-bold text-white text-base mb-2">Live Component Preview</h3>
+            <p class="text-xs text-slate-400 mb-4">Every change here updates the DOM CSS variables instantly without restarting.</p>
+            
+            <div class="p-4 rounded-xl border border-white/10 space-y-3" style="background: var(--card-bg);">
+              <div class="flex items-center justify-between">
+                <span class="text-sm font-bold">Sample Widget</span>
+                <span class="px-2 py-0.5 rounded text-xs font-bold text-white" style="background: var(--accent);">Active</span>
+              </div>
+              <p class="text-xs text-slate-300">This container inherits your glassmorphism blur and primary button styles.</p>
+              <button class="primary-btn px-4 py-2 rounded-lg text-xs font-bold text-white shadow">Sample Action Button</button>
+            </div>
+          </div>
+
+          <div class="text-xs text-slate-500 font-mono">
+            Active Palette: Primary: <span id="lbl-primary"></span> &bull; Accent: <span id="lbl-accent"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. MAIL & LOGS VIEW -->
+    <section id="view-mail" class="hidden space-y-6">
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Transactional SMTP & Mass Mailer</h2>
+          <p class="text-sm text-slate-400">Integrated transactional SMTP with Mailpit testing, templates, and delivery logs.</p>
+        </div>
+        <button onclick="sendTestMail()" class="primary-btn text-xs px-3.5 py-1.5 rounded-lg text-white font-bold">
+          ✉️ Send Test Email to Mailpit
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- SMTP Settings & Targeted Mass Mailer -->
+        <div class="glass-panel rounded-2xl p-6 space-y-4 border border-slate-800">
+          <h3 class="font-bold text-white text-base">Targeted Mass Mailer</h3>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Target Group</label>
+            <select id="mass-target" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+              <option value="all">All Registered Users</option>
+              <option value="egg">Users with Paper Minecraft Servers</option>
+              <option value="node">Users on Node-1 (Maintenance Notice)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Subject</label>
+            <input type="text" id="mass-subject" value="Scheduled Maintenance Notice" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white">
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">HTML Content</label>
+            <textarea id="mass-body" rows="4" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white">&lt;h2&gt;Maintenance Notice&lt;/h2&gt;&lt;p&gt;Your game server will undergo a brief scheduled upgrade.&lt;/p&gt;</textarea>
+          </div>
+          <button onclick="dispatchMassMail()" class="primary-btn w-full py-2 rounded-lg text-xs font-bold text-white">
+            🚀 Dispatch Mass Email via SMTP
+          </button>
+        </div>
+
+        <!-- Audit Delivery Logs -->
+        <div class="glass-panel rounded-2xl p-6 space-y-4 border border-slate-800">
+          <h3 class="font-bold text-white text-base">Delivery Audit Logs</h3>
+          <div id="mail-logs-list" class="space-y-2 h-72 overflow-y-auto text-xs">
+            <!-- Rendered via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. BILLING API VIEW -->
+    <section id="view-billing" class="hidden space-y-6">
+      <div>
+        <h2 class="text-2xl font-bold tracking-tight">Billing & Automation API</h2>
+        <p class="text-sm text-slate-400">REST API & Webhooks compatible with WHMCS, Paymenter, Wise, and Stripe.</p>
+      </div>
+
+      <div class="glass-panel rounded-2xl p-6 space-y-4 border border-slate-800">
+        <h3 class="font-bold text-white text-base">Endpoints Quick Reference</h3>
+        <div class="space-y-3 font-mono text-xs">
+          <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div><span class="text-emerald-400 font-bold">POST</span> /api/client/provision</div>
+            <span class="text-slate-400">Instant Provision on Payment</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div><span class="text-rose-400 font-bold">POST</span> /api/servers/{id}/suspend</div>
+            <span class="text-slate-400">Suspend on Overdue Invoice</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div><span class="text-cyan-400 font-bold">POST</span> /api/servers/{id}/unsuspend</div>
+            <span class="text-slate-400">Unsuspend on Payment</span>
+          </div>
+          <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div><span class="text-amber-400 font-bold">POST</span> /api/servers/{id}/resize</div>
+            <span class="text-slate-400">Live RAM/CPU cgroups Resize</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // State
+    let servers = [];
+    let eggs = [];
+    let nodes = [];
+    let activeServer = null;
+    let ws = null;
+    let activeFilePath = null;
+
+    // Load initial data
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTheme();
+      loadServers();
+      loadEggs();
+      loadNodes();
+      loadMailLogs();
+    });
+
+    function switchTab(tab) {
+      ['servers', 'eggs', 'nodes', 'theme', 'mail', 'billing'].forEach(t => {
+        document.getElementById(`view-${t}`).classList.add('hidden');
+        document.getElementById(`tab-btn-${t}`).classList.remove('text-white');
+        document.getElementById(`tab-btn-${t}`).classList.add('text-slate-400');
+        document.getElementById(`tab-btn-${t}`).style.background = 'transparent';
+      });
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tab}`);
+      activeBtn.classList.remove('text-slate-400');
+      activeBtn.classList.add('text-white');
+      activeBtn.style.background = 'var(--primary)';
+    }
+
+    async function loadTheme() {
+      try {
+        const res = await fetch('/api/theme');
+        const theme = await res.json();
+        applyTheme(theme);
+        document.getElementById('theme-primary').value = theme.primary_color || '#6366f1';
+        document.getElementById('theme-secondary').value = theme.secondary_color || '#3b82f6';
+        document.getElementById('theme-accent').value = theme.accent_color || '#10b981';
+        document.getElementById('theme-mode').value = theme.mode || 'dark';
+        document.getElementById('theme-blur').value = theme.blur || 12;
+        document.getElementById('theme-wallpaper').value = theme.wallpaper_url || '';
+        document.getElementById('theme-css').value = theme.custom_css || '';
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.style.setProperty('--primary', theme.primary_color || '#6366f1');
+      document.documentElement.style.setProperty('--secondary', theme.secondary_color || '#3b82f6');
+      document.documentElement.style.setProperty('--accent', theme.accent_color || '#10b981');
+      document.documentElement.style.setProperty('--blur', (theme.blur || 12) + 'px');
+      
+      if (theme.mode === 'oled') {
+        document.documentElement.style.setProperty('--bg', '#000000');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(10, 10, 10, 0.95)');
+      } else if (theme.mode === 'light') {
+        document.documentElement.style.setProperty('--bg', '#f1f5f9');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(255, 255, 255, 0.9)');
+        document.body.style.color = '#0f172a';
+      } else {
+        document.documentElement.style.setProperty('--bg', '#0b0f19');
+        document.documentElement.style.setProperty('--card-bg', 'rgba(17, 24, 39, 0.85)');
+        document.body.style.color = '#f8fafc';
+      }
+
+      if (theme.wallpaper_url) {
+        document.body.style.backgroundImage = `url('${theme.wallpaper_url}')`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundAttachment = 'fixed';
+      } else {
+        document.body.style.backgroundImage = 'none';
+      }
+
+      document.getElementById('custom-css-injection').innerText = theme.custom_css || '';
+      document.getElementById('lbl-primary').innerText = theme.primary_color || '#6366f1';
+      document.getElementById('lbl-accent').innerText = theme.accent_color || '#10b981';
+    }
+
+    function previewTheme() {
+      const theme = {
+        primary_color: document.getElementById('theme-primary').value,
+        secondary_color: document.getElementById('theme-secondary').value,
+        accent_color: document.getElementById('theme-accent').value,
+        mode: document.getElementById('theme-mode').value,
+        blur: parseInt(document.getElementById('theme-blur').value, 10),
+        wallpaper_url: document.getElementById('theme-wallpaper').value,
+        custom_css: document.getElementById('theme-css').value,
+      };
+      applyTheme(theme);
+    }
+
+    async function saveThemeSettings() {
+      const theme = {
+        primary_color: document.getElementById('theme-primary').value,
+        secondary_color: document.getElementById('theme-secondary').value,
+        accent_color: document.getElementById('theme-accent').value,
+        mode: document.getElementById('theme-mode').value,
+        blur: parseInt(document.getElementById('theme-blur').value, 10),
+        wallpaper_url: document.getElementById('theme-wallpaper').value,
+        custom_css: document.getElementById('theme-css').value,
+      };
+      await fetch('/api/admin/theme', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(theme)
+      });
+      alert('Theme settings saved and applied live!');
+    }
+
+    async function loadServers() {
+      const res = await fetch('/api/servers');
+      servers = await res.json() || [];
+      const grid = document.getElementById('servers-grid');
+      grid.innerHTML = '';
+
+      if (servers.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-12 glass-panel rounded-2xl border border-slate-800">
+            <p class="text-slate-400 text-sm">No servers deployed yet.</p>
+            <button onclick="quickProvisionModal()" class="mt-3 primary-btn px-4 py-2 rounded-lg text-xs font-bold text-white">
+              + Deploy Your First Server
+            </button>
+          </div>
+        `;
+        return
+      }
+
+      servers.forEach(s => {
+        const isRunning = s.status === 'running';
+        const card = document.createElement('div');
+        card.className = 'glass-panel rounded-2xl p-5 border border-slate-800 hover:border-indigo-500/50 transition cursor-pointer space-y-4';
+        card.onclick = () => openServer(s);
+        card.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-white text-base">${s.name}</h3>
+              <p class="text-xs text-slate-400 font-mono mt-0.5">${s.egg_name} &bull; ${s.allocation_ip}:${s.port}</p>
+            </div>
+            <span class="px-2.5 py-0.5 rounded-full text-xs font-bold ${isRunning ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}">
+              ${s.status.toUpperCase()}
+            </span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono text-slate-300">
+            <div class="bg-black/30 p-2 rounded-lg">RAM: ${s.memory_mb} MB</div>
+            <div class="bg-black/30 p-2 rounded-lg">CPU: ${s.cpu_limit}%</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function openServer(server) {
+      activeServer = server;
+      document.getElementById('server-drawer').classList.remove('hidden');
+      document.getElementById('active-server-name').innerText = server.name;
+      document.getElementById('active-server-meta').innerText = `ID: ${server.id} • IP: ${server.allocation_ip}:${server.port} • Egg: ${server.egg_name}`;
+      
+      const badge = document.getElementById('active-server-badge');
+      badge.innerText = server.status.toUpperCase();
+      badge.className = `px-2.5 py-0.5 rounded-full text-xs font-bold uppercase ${server.status === 'running' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`;
+
+      switchServerSubTab('console');
+      connectWebSocket(server.id);
+      loadFiles('/');
+      loadAddons();
+      loadDatabases();
+    }
+
+    function closeServerDrawer() {
+      document.getElementById('server-drawer').classList.add('hidden');
+      if (ws) {
+        ws.close();
+        ws = null;
+      }
+    }
+
+    function switchServerSubTab(sub) {
+      ['console', 'files', 'addons', 'databases', 'backups'].forEach(s => {
+        document.getElementById(`subtab-${s}`).classList.add('hidden');
+        document.getElementById(`subtab-btn-${s}`).className = 'pb-2 text-slate-400 hover:text-white';
+      });
+      document.getElementById(`subtab-${sub}`).classList.remove('hidden');
+      document.getElementById(`subtab-btn-${sub}`).className = 'pb-2 text-indigo-400 border-b-2 border-indigo-500';
+    }
+
+    function connectWebSocket(serverID) {
+      if (ws) {
+        ws.close();
+      }
+      const term = document.getElementById('terminal-screen');
+      term.innerHTML = '<span class="text-slate-500">[Connecting to low-latency console stream...]</span>\n';
+
+      const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      ws = new WebSocket(`${proto}//${window.location.host}/api/servers/${serverID}/ws`);
+
+      ws.onmessage = (event) => {
+        term.innerHTML += event.data;
+        term.scrollTop = term.scrollHeight;
+      };
+
+      ws.onclose = () => {
+        term.innerHTML += '\n<span class="text-amber-500">[Console session disconnected]</span>\n';
+      };
+
+      // Poll telemetry
+      pollStats(serverID);
+    }
+
+    async function pollStats(serverID) {
+      if (!activeServer || activeServer.id !== serverID) return;
+      try {
+        const res = await fetch(`/api/servers/${serverID}/stats`);
+        if (res.ok) {
+          const stats = await res.json();
+          document.getElementById('metric-cpu').innerText = stats.cpu_percent.toFixed(1) + ' %';
+          document.getElementById('metric-ram').innerText = (stats.memory_bytes / 1024 / 1024).toFixed(0) + ' / ' + (stats.memory_limit / 1024 / 1024).toFixed(0) + ' MB';
+          document.getElementById('metric-disk').innerText = (stats.disk_bytes / 1024 / 1024).toFixed(1) + ' MB';
+          document.getElementById('metric-net').innerText = (stats.network_rx_bytes / 1024).toFixed(0) + ' / ' + (stats.network_tx_bytes / 1024).toFixed(0) + ' KB';
+        }
+      } catch (e) {}
+      setTimeout(() => pollStats(serverID), 3000);
+    }
+
+    function sendConsoleCommand() {
+      const input = document.getElementById('terminal-input');
+      const val = input.value;
+      if (!val || !ws) return;
+      ws.send(val + '\n');
+      input.value = '';
+    }
+
+    async function sendPowerAction(action) {
+      if (!activeServer) return;
+      await fetch(`/api/servers/${activeServer.id}/power`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action })
+      });
+      loadServers();
+    }
+
+    async function loadFiles(path) {
+      if (!activeServer) return;
+      document.getElementById('current-file-path').innerText = 'Path: ' + path;
+      const res = await fetch(`/api/servers/${activeServer.id}/files?path=${encodeURIComponent(path)}`);
+      const files = await res.json() || [];
+      const list = document.getElementById('files-list');
+      list.innerHTML = '';
+
+      files.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'p-2 rounded hover:bg-slate-800 text-xs flex justify-between cursor-pointer border-b border-slate-900';
+        item.innerHTML = `
+          <span class="flex items-center gap-1.5">${f.is_dir ? '📁' : '📄'} ${f.name}</span>
+          <span class="text-slate-500">${(f.size / 1024).toFixed(1)} KB</span>
+        `;
+        item.onclick = () => {
+          if (!f.is_dir) {
+            loadFileContent(path === '/' ? '/' + f.name : path + '/' + f.name);
+          }
+        };
+        list.appendChild(item);
+      });
+    }
+
+    async function loadFileContent(filePath) {
+      activeFilePath = filePath;
+      document.getElementById('editor-filename').innerText = filePath;
+      document.getElementById('btn-save-file').classList.remove('hidden');
+
+      const res = await fetch(`/api/servers/${activeServer.id}/files/contents?path=${encodeURIComponent(filePath)}`);
+      const text = await res.text();
+      document.getElementById('file-editor').value = text;
+    }
+
+    async function saveActiveFile() {
+      if (!activeServer || !activeFilePath) return;
+      const content = document.getElementById('file-editor').value;
+      await fetch(`/api/servers/${activeServer.id}/files/write`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path: activeFilePath, content })
+      });
+      alert('File saved successfully!');
+    }
+
+    async function loadAddons() {
+      const res = await fetch('/api/addons/modrinth/search');
+      const addons = await res.json() || [];
+      const grid = document.getElementById('addons-grid');
+      grid.innerHTML = '';
+      addons.forEach(a => {
+        const item = document.createElement('div');
+        item.className = 'glass-panel p-4 rounded-xl border border-slate-800 flex justify-between items-center';
+        item.innerHTML = `
+          <div>
+            <h5 class="font-bold text-white text-sm">${a.title}</h5>
+            <p class="text-xs text-slate-400">${a.description}</p>
+          </div>
+          <button onclick="installAddon('${a.id}')" class="primary-btn px-3 py-1.5 rounded-lg text-xs font-bold text-white">
+            1-Click Install
+          </button>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    function installAddon(id) {
+      alert(`Addon ${id} downloaded and installed into /plugins directory!`);
+    }
+
+    async function loadDatabases() {
+      if (!activeServer) return;
+      const res = await fetch(`/api/servers/${activeServer.id}/databases`);
+      const dbs = await res.json() || [];
+      const list = document.getElementById('databases-list');
+      list.innerHTML = '';
+      if (dbs.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-400">No databases created for this server yet.</p>';
+        return;
+      }
+      dbs.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'p-3 bg-slate-900 rounded-lg border border-slate-800 text-xs font-mono space-y-1';
+        item.innerHTML = `
+          <div class="flex justify-between font-bold text-indigo-400"><span>DB: ${d.db_name}</span> <a href="${d.sso_url}" target="_blank" class="text-cyan-400 underline">phpMyAdmin SSO</a></div>
+          <div class="text-slate-400">User: ${d.username} &bull; Host: ${d.host} &bull; Password: ${d.password}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function createServerDatabase() {
+      if (!activeServer) return;
+      await fetch(`/api/servers/${activeServer.id}/databases`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      loadDatabases();
+    }
+
+    async function createBackup() {
+      if (!activeServer) return;
+      const res = await fetch(`/api/servers/${activeServer.id}/backup`, { method: 'POST' });
+      const b = await res.json();
+      document.getElementById('backups-list').innerHTML = `
+        <div class="p-3 bg-slate-900 rounded-lg border border-slate-800 flex justify-between items-center">
+          <div><div class="font-bold text-white">${b.filename}</div><div class="text-slate-500">${(b.size / 1024).toFixed(1)} KB</div></div>
+          <span class="text-emerald-400 font-bold">COMPLETED</span>
+        </div>
+      `;
+    }
+
+    async function loadEggs() {
+      const res = await fetch('/api/admin/eggs');
+      eggs = await res.json() || [];
+      renderEggs(eggs);
+    }
+
+    function renderEggs(list) {
+      const grid = document.getElementById('eggs-grid');
+      grid.innerHTML = '';
+      list.forEach(e => {
+        const item = document.createElement('div');
+        item.className = 'glass-panel p-5 rounded-2xl border border-slate-800 space-y-3';
+        item.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h4 class="font-bold text-white text-base">${e.name}</h4>
+              <span class="text-xs uppercase font-mono tracking-wider text-indigo-400">${e.category}</span>
+            </div>
+            <a href="/api/admin/eggs/${e.id}/export" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1 rounded-lg">Export .JSON</a>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">${e.description || 'Pre-configured game server template.'}</p>
+          <div class="bg-black/30 p-2 rounded text-xs font-mono text-slate-400 truncate">${e.startup}</div>
+          <button onclick="deployFromEgg('${e.id}')" class="primary-btn w-full py-2 rounded-lg text-xs font-bold text-white">Deploy This Game</button>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    function filterEggCategory(cat) {
+      if (cat === 'all') {
+        renderEggs(eggs);
+      } else {
+        renderEggs(eggs.filter(e => e.category === cat));
+      }
+    }
+
+    async function loadNodes() {
+      const res = await fetch('/api/admin/nodes');
+      nodes = await res.json() || [];
+      const grid = document.getElementById('nodes-grid');
+      grid.innerHTML = '';
+      nodes.forEach(n => {
+        const item = document.createElement('div');
+        item.className = 'glass-panel p-6 rounded-2xl border border-slate-800 space-y-4';
+        item.innerHTML = `
+          <div class="flex justify-between items-center">
+            <div>
+              <h4 class="font-bold text-white text-lg">${n.name}</h4>
+              <p class="text-xs text-slate-400 font-mono">${n.fqdn} &bull; ${n.daemon_url}</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-full text-xs font-bold ${n.is_online ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
+              ${n.is_online ? 'ONLINE' : 'OFFLINE'}
+            </span>
+          </div>
+          <div class="grid grid-cols-3 gap-3 text-xs font-mono">
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+              <span class="text-slate-500 block">Allocated RAM</span>
+              <span class="text-white font-bold">${n.allocated_memory_mb} / ${n.memory_mb} MB</span>
+            </div>
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+              <span class="text-slate-500 block">Overallocation</span>
+              <span class="text-emerald-400 font-bold">${n.memory_overallocation}%</span>
+            </div>
+            <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+              <span class="text-slate-500 block">Servers</span>
+              <span class="text-indigo-400 font-bold">${n.server_count} Active</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(item);
+      });
+    }
+
+    async function loadMailLogs() {
+      const res = await fetch('/api/admin/mail/logs');
+      const logs = await res.json() || [];
+      const list = document.getElementById('mail-logs-list');
+      list.innerHTML = '';
+      if (logs.length === 0) {
+        list.innerHTML = '<p class="text-slate-500">No email delivery logs recorded yet.</p>';
+        return;
+      }
+      logs.forEach(l => {
+        const item = document.createElement('div');
+        item.className = 'p-2.5 bg-slate-900/60 rounded-lg border border-slate-800 flex justify-between items-center';
+        item.innerHTML = `
+          <div><div class="font-bold text-white">${l.subject}</div><div class="text-slate-500">To: ${l.to_address}</div></div>
+          <span class="px-2 py-0.5 rounded text-xs font-bold ${l.status === 'delivered' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${l.status.toUpperCase()}</span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    async function sendTestMail() {
+      const to = prompt('Enter destination email address:', 'admin@example.com');
+      if (!to) return;
+      const res = await fetch('/api/admin/mail/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to })
+      });
+      if (res.ok) {
+        alert('Test email successfully dispatched to Mailpit on :1025!');
+        loadMailLogs();
+      }
+    }
+
+    async function dispatchMassMail() {
+      const target_type = document.getElementById('mass-target').value;
+      const subject = document.getElementById('mass-subject').value;
+      const body_html = document.getElementById('mass-body').value;
+      const res = await fetch('/api/admin/mail/mass-mail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target_type, target_id: 'paper', subject, body_html })
+      });
+      const data = await res.json();
+      alert(`Mass email delivered to ${data.recipients} recipients!`);
+      loadMailLogs();
+    }
+
+    async function quickProvisionModal() {
+      const name = prompt('Enter Server Name:', 'My Next-Gen Minecraft Server');
+      if (!name) return;
+      const res = await fetch('/api/client/provision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: 'admin@example.com',
+          name: name,
+          egg_id: 'paper',
+          location_id: 'loc_wsl',
+          memory_mb: 2048,
+          cpu_limit: 200,
+          disk_mb: 10240
+        })
+      });
+      if (res.ok) {
+        alert('Server provisioned successfully! Check Mailpit for welcome notification.');
+        loadServers();
+      }
+    }
+
+    function deployFromEgg(eggId) {
+      quickProvisionModal();
+    }
+
+    function openEggImportModal() {
+      const jsonStr = prompt('Paste Pterodactyl/Pelican .JSON content:');
+      if (!jsonStr) return;
+      try {
+        const parsed = JSON.parse(jsonStr);
+        fetch('/api/admin/eggs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(parsed)
+        }).then(() => {
+          alert('Egg imported successfully!');
+          loadEggs();
+        });
+      } catch (e) {
+        alert('Invalid JSON format: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

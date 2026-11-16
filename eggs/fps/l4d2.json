@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Left 4 Dead 2",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Cooperative action horror FPS game set in the zombie apocalypse.",
+  "docker_images": {
+    "Source": "ghcr.io/pterodactyl/games:source",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./srcds_run -game left4dead2 +map {{SERVER_MAP}} -port {{SERVER_PORT}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Connection to Steam servers successful"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'l4d2 ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

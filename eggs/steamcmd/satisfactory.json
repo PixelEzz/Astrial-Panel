@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Satisfactory",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Satisfactory is a first-person open-world factory building game.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./FactoryServer.sh -Port={{SERVER_PORT}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Game server started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'satisfactory ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

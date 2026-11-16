@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: local/postgres:16
+    container_name: gamepanel-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: gamepanel
+
+  redis:
+    image: local/redis:7
+    container_name: gamepanel-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  mailpit:
+    image: local/mailpit:latest
+    container_name: gamepanel-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"

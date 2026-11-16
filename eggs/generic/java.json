@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Java (Generic JAR / Spring Boot)",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Execute any standalone Java JAR application or microservice.",
+  "docker_images": {
+    "Java 17": "alpine:latest",
+    "Java 21": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar {{JAR_FILE}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Started Application"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'java ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "JAR File",
+      "env_variable": "JAR_FILE",
+      "default_value": "app.jar",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

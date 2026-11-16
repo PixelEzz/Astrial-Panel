@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Unturned",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Unturned is a multiplayer open-world survival game.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./Unturned_Headless.x86_64 -batchmode -nographics +secureserver/{{SERVER_ID}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Successfully loaded"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'unturned ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

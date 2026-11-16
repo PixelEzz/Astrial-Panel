@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Squad",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Squad is a large-scale combined arms tactical multi-player shooter.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./SquadServer.sh Port={{SERVER_PORT}} QueryPort={{QUERY_PORT}}",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "Game engine initialized"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'squad ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

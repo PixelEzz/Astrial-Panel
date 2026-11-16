@@ -1,0 +1,26 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "MariaDB / MySQL Standalone",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Dedicated high-performance MariaDB/MySQL database container.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "mariadbd --user=mysql",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "ready for connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'mariadb ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

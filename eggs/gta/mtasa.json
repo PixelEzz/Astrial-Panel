@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Multi Theft Auto (MTA:SA)",
+  "category": "gta",
+  "author": "support@gamepanel.io",
+  "description": "Multiplayer mod for Grand Theft Auto: San Andreas.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./mta-server64 -n",
+  "config": {
+    "files": {
+      "mtaserver.conf": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Server started and is ready to accept connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'mtasa ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

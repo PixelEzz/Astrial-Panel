@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Arma 3",
+  "category": "fps",
+  "author": "support@gamepanel.io",
+  "description": "Premier military tactical shooter combat simulation.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./arma3server -port={{SERVER_PORT}} -config=server.cfg",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Game started"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'arma3 ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

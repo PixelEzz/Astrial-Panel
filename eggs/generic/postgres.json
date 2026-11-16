@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "PostgreSQL Standalone",
+  "category": "generic",
+  "author": "support@gamepanel.io",
+  "description": "Dedicated PostgreSQL 16 database container with persistent data.",
+  "docker_images": {
+    "Postgres": "local/postgres:16",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "/entrypoint.sh",
+  "config": {
+    "files": {},
+    "startup": {
+      "done": "database system is ready to accept connections"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'pg ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "7 Days to Die",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "7 Days to Die is an open-world game that is a unique combination of first person shooter, survival horror, tower defense, and role-playing.",
+  "docker_images": {
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./7DaysToDieServer.x86_64 -configfile=serverconfig.xml",
+  "config": {
+    "files": {
+      "serverconfig.xml": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "GameServer.LogOn successful"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo '7dtd ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}

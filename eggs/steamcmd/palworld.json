@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Palworld Dedicated Server",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "Fight, farm, build and work alongside mysterious creatures called Pals.",
+  "docker_images": {
+    "Debian": "ghcr.io/parkervcp/yolks:debian",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./PalServer.sh -port={{SERVER_PORT}} -players={{MAX_PLAYERS}}",
+  "config": {
+    "files": {
+      "PalWorldSettings.ini": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "App id: 2394010"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'palworld ready'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Max Players",
+      "env_variable": "MAX_PLAYERS",
+      "default_value": "32",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric"
+    }
+  ]
+}

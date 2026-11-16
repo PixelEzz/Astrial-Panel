@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Rust (Vanilla + Oxide/uMod)",
+  "category": "steamcmd",
+  "author": "support@gamepanel.io",
+  "description": "The only aim in Rust is to survive. Conquer hunger, thirst and cold.",
+  "docker_images": {
+    "Rust": "ghcr.io/pterodactyl/games:rust",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "./RustDedicated -batchmode +server.port {{SERVER_PORT}} +server.level \"{{SERVER_LEVEL}}\" +server.seed {{SERVER_SEED}} +server.worldsize {{WORLD_SIZE}} +server.maxplayers {{MAX_PLAYERS}} +server.hostname \"{{SERVER_NAME}}\"",
+  "config": {
+    "files": {
+      "server.cfg": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Server startup complete"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'rust installed'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": [
+    {
+      "name": "Server Name",
+      "env_variable": "SERVER_NAME",
+      "default_value": "My Rust Server",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    },
+    {
+      "name": "World Size",
+      "env_variable": "WORLD_SIZE",
+      "default_value": "3000",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required|numeric"
+    },
+    {
+      "name": "Server Level",
+      "env_variable": "SERVER_LEVEL",
+      "default_value": "Procedural Map",
+      "user_viewable": true,
+      "user_editable": true,
+      "rules": "required"
+    }
+  ]
+}

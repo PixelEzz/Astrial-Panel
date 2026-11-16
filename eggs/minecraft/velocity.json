@@ -1,0 +1,31 @@
+{
+  "meta": {
+    "version": "PTDL_v2"
+  },
+  "name": "Velocity Proxy",
+  "category": "minecraft",
+  "author": "support@gamepanel.io",
+  "description": "The modern, next-generation Minecraft proxy server designed for performance and flexibility.",
+  "docker_images": {
+    "Java 17": "ghcr.io/pterodactyl/yolks:java_17",
+    "Alpine": "alpine:latest"
+  },
+  "startup": "java -Xms128M -Xmx{{SERVER_MEMORY}}M -jar velocity.jar",
+  "config": {
+    "files": {
+      "velocity.toml": {
+        "parser": "file"
+      }
+    },
+    "startup": {
+      "done": "Booting up Velocity"
+    }
+  },
+  "scripts": {
+    "installation": {
+      "script": "echo 'velocity installed'",
+      "container": "alpine:latest"
+    }
+  },
+  "variables": []
+}
